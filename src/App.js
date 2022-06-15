@@ -1,155 +1,95 @@
 import { useState } from 'react'
 
-const Header = (props) => {
-  return (
-    <div>
-      <h1>{props.course.name}</h1>
-    </div>
-    
-  )
-}
+const App = (props) => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', phone: '7144120007', id: 1 },
+    { name: 'Berta LaCosta', phone: '3138976451', id: 2 }
+  ]) 
+  const [newName, setNewName] = useState('') 
+  const [newPhone, setNewPhone] = useState('') 
+  const [newSearch, setNewSearch] = useState('')
+  const [foundUsers, setFoundUsers] = useState(persons);
 
-const Content = (props) => {
-  console.log(props)
-  return(
-    <div>
-     <p>
-        {props.parts[0].name} {props.parts[0].exercises}
-      </p>
-     <p>
-        {props.parts[1].name} {props.parts[1].exercises}
-      </p>
-      <p>
-        {props.parts[2].name} {props.parts[2].exercises}
-      </p>
-  </div>
-  )
-}
+  
 
-const Total = (props) => {
-  return(
-    <div>
-      <p>Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}</p>
-    </div>
-  )
-}
-const Display = ({counter}) => <div>{counter}</div> 
-
-const Button = ({onClick, text}) => (
-    <button onClick={onClick}>
-      {text}
-    </button>
-
-)
-
-const Hello = ({name, age}) => {
-  const bornYear = () => new Date().getFullYear() - age
-
-  return (
-    <div>
-      <p>
-        Hello {name}, you are {age} years old
-      </p>
-      <p>So you were probably born in {bornYear()}</p>
-    </div>
-  )
-}
-
-const History = ({allClicks}) => {
-  if (allClicks.length === 0) {
-    return (
-      <div>
-        the app is used by pressing the buttons
-      </div>
-    )
-  }
-  return (
-    <div>
-      button press history: {allClicks.join(' ')}
-    </div>
-  )
-}
-
-const LeftRight = () => {
-  const [left, setLeft] = useState(0)
-  const [right, setRight] = useState(0)
-  const [allClicks, setAll] = useState([])
-
-  const handleLeftClick = () => {
-    setAll(allClicks.concat('L'))
-    setLeft(left + 1)
-  }
-
-  const handleRightClick = () => {
-    setAll(allClicks.concat('R'))
-    setRight(right + 1)
-  }
-  return (
-    <div>
-    {left}
-    <Button onClick={handleLeftClick} text='left' />
-    <Button onClick={handleRightClick} text='right' />
-    {right}
-    <div>
-    <History allClicks={allClicks} />
-    </div>
-  </div>
-
-  )
-}
-
-const App = () => {
-  const name = 'Peter'
-  const age = 10
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 14
+  const addElementFunction = (event) => {
+    event.preventDefault()
+    if (persons.map(person => person.name).indexOf(newName) >= 0) {
+      alert(`${newName} is already taken`)
+    } else {
+      const noteObject = {
+        name: newName,
+        phone: newPhone,
+        id: persons.length + 1
       }
-    ]
+      setPersons(persons.concat(noteObject))
+      setFoundUsers(persons.concat(noteObject))
+      setNewName('')
+      setNewPhone('')
+      
+    }
   }
-  const [ counter, setCounter ] = useState(0)
-  const increaseByOne = () => setCounter(counter + 1)
-  const decreaseByOne = () => setCounter(counter - 1)
-  const setToZero = () => setCounter(0)
 
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
 
-return (
-  <><div>
-    <Header course={course} />
-    <Content parts={course.parts} />
-    <Total parts={course.parts} />
-  </div>
-  <div>
-  <Hello name="Maya" age={26 + 10} />
-      <Hello name={name} age={age} />
-  </div>
-  <div>
-      <Display counter={counter} />
-      <Button
-        onClick={increaseByOne}
-        text='plus' />
-      <Button
-        onClick={setToZero}
-        text='zero' />
-      <Button
-        onClick={decreaseByOne}
-        text='minus' />
-    </div>
+  const handlePhoneChange = (event) => {
+    setNewPhone(event.target.value)
+  }
+
+  const handleSearchChange = (event) => {
+      const keyword = event.target.value;
+  
+      if (keyword !== '') {
+        const results = persons.filter((person) => {
+          return person.name.toLowerCase().includes(keyword.toLowerCase());
+          // Use the toLowerCase() method to make it case-insensitive
+        });
+        setFoundUsers(results);
+      } else {
+        setFoundUsers(persons);
+        // If the text field is empty, show all users
+      }
+  
+      setNewSearch(keyword);
+  }
+ 
+  return (
     <div>
-      <LeftRight />
-      </div></>
-)
+      <h1>Phone Book</h1>
+      
+        Filter:  <input
+        value={newSearch} 
+        onChange={handleSearchChange}
+        /><br></br><br></br>
+      <form onSubmit={addElementFunction}>
+        Name:
+        <input
+        value={newName} 
+        onChange={handleNameChange}
+        /><br></br><br></br>
+        Phone:
+        <input 
+        value={newPhone} 
+        onChange={handlePhoneChange}
+        /><br></br><br></br>
+        <button type="submit">save</button>
+      </form>   
+      <div className="user-list">
+        {foundUsers && foundUsers.length > 0 ? (
+          foundUsers.map((user) => (
+            <li key={user.id} className="user">
+              <span className="user-id">{user.id} - </span>
+              <span className="user-name">{user.name}: </span><span className="user-name">{user.phone}</span>
+            </li>
+          ))
+        ) : (
+          <h1>No results found!</h1>
+        )}
+      </div>
+    </div>
+  )
 }
 
-export default App
+export default App 
