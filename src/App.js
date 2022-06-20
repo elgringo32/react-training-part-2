@@ -30,7 +30,6 @@ const App = () => {
   }
 
   const handleUpdatePhoneChange = (event) => {
-    console.log(event.target.value)
     setUpdatePhone(event.target.value)
   }
 
@@ -57,7 +56,6 @@ const App = () => {
     .then(res => {
         setFoundUsers(res.data)
         setPersons(res.data)
-        console.log('got persons')
     })  
   }
   useEffect(getPersons, [])
@@ -109,6 +107,7 @@ const App = () => {
       name: userName,
       number: newUpdatePhone
     }
+
     personService
     .update(editId,personObject)
     .then(res => {
@@ -122,6 +121,7 @@ const App = () => {
         setNewNotification(null)
         }, 5000)
     })
+    
     const selectUserPhone = document.querySelector(`[data-person-id="${editId}"]`).querySelector('.user-number')
     const selectUserUpdateBtn = document.querySelector(`[data-person-id="${editId}"]`).querySelector('.user-update')
     const selectUserUpdateInput = document.querySelector(`[data-person-id="${editId}"]`).querySelector('.user-update-input')
